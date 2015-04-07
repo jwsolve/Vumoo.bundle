@@ -1,0 +1,64 @@
+########################################################################################
+def NormalizeURL(url):
+
+	return url
+
+########################################################################################
+def MetadataObjectForURL(url):
+
+	page = HTML.ElementFromURL(url)
+	title = page.xpath("//h3[@class='movie_title']/span/text()")[0]
+	description = page.xpath("//div[contains(@class,'movie_detail_info')]/p/text()")[0]
+	thumb = page.xpath("//img[@class='mov_poster']/@src")[0]
+	rating = page.xpath("//b[@class='imdb_rating']/text()")[0]	
+
+	return VideoClipObject(
+		title = title,
+		summary = description,
+		thumb = thumb,
+		rating = float(rating)
+	)
+
+########################################################################################
+def MediaObjectsForURL(url):
+
+	return [
+        	MediaObject(
+			parts = [
+				PartObject(
+					key = 
+						Callback(
+							PlayVideo,
+							url = url,
+							fmt = 'hi',
+							post_url = url
+						)
+					)
+				],
+			video_resolution = 720,
+			bitrate = 1500,
+			container = Container.MP4,
+			video_codec = VideoCodec.H264,
+			audio_codec = AudioCodec.AAC,
+			audio_channels = 2,
+			optimized_for_streaming = True if Client.Product != 'Plex Web' else False
+			)
+	]
+
+########################################################################################
+@indirect
+def PlayVideo(url, fmt):
+
+	video_url = ""
+	view_url = ""
+	vodlocker = ""
+	html = HTML.ElementFromURL(url)
+	for each in html.xpath("//a[contains(@class,'server_url')]"):
+		view_url = each.xpath("./@href")[0].replace('.com/','.com/embed-',-1) + '.html'
+		if "vodlocker" in view_url:
+			vodlocker = HTTP.Request(view_url).content
+			video_url = Regex('file: "([^"]+)"').search(vodlocker).groups()[0]
+			break
+
+	return IndirectResponse(VideoClipObject, key=video_url)
+
