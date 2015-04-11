@@ -83,7 +83,7 @@ def EpisodeDetail(title, url):
 	oc = ObjectContainer(title1 = title)
 	page = HTML.ElementFromURL(BASE_URL + url)
 	title = page.xpath("//h3[@class='movie_title']/span/text()")[0]
-	description = page.xpath("//div[contains(@class,'movie_detail_info')]/p/text()")[0]
+	description = page.xpath("//div[contains(@class,'movie_detail_info')]/p/text()")[0].strip()
 	thumb = page.xpath("//img[@class='mov_poster']/@src")[0]
 
 	oc.add(VideoClipObject(
