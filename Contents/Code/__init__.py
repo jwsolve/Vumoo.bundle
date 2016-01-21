@@ -45,7 +45,7 @@ def Shows():
 	oc = ObjectContainer()
 	html = HTML.ElementFromURL(BASE_URL + '/videos/category')
 
-	for each in html.xpath("//div[@class='sb_dynamic expand_box']/ul/li"):
+	for each in html.xpath("//ul[@class='multi-column-dropdown']/li"):
 		title = each.xpath("./a/text()")[0]
 		url = each.xpath("./a/@href")[0]
 
@@ -84,7 +84,7 @@ def EpisodeDetail(title, url):
 	page = HTML.ElementFromURL(BASE_URL + url)
 	title = page.xpath("//h3[@class='movie_title']/span/text()")[0]
 	description = page.xpath("//div[contains(@class,'movie_detail_info')]/p/text()")[0].strip()
-	thumb = page.xpath("//img[@class='mov_poster']/@src")[0]
+	thumb = page.xpath("//img[contains(@class,'mov_poster')]/@src")[0]
 
 	oc.add(VideoClipObject(
 		title = title,
